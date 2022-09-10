@@ -1,0 +1,65 @@
+source "${HOME}/.profile"
+
+# Handpicking plugins:
+# Inspiration source: https://www.ivaylopavlov.com/setting-oh-zsh-zsh/
+source "${HOME}/.zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+# consider also installing: https://github.com/zsh-users/zsh-autosuggestions
+
+
+# Enhance history
+#
+#
+
+
+# Thanks to: https://jdhao.github.io/2021/03/24/zsh_history_setup/
+
+# the detailed meaning of the below three variable can be found in `man zshparam`.
+export HISTFILE=~/.histfile
+export HISTSIZE=1000000   # the number of items for the internal history list
+export SAVEHIST=1000000   # maximum number of items for the history file
+
+# The meaning of these options can be found in man page of `zshoptions`.
+setopt HIST_IGNORE_ALL_DUPS  # do not put duplicated command into history list
+setopt HIST_SAVE_NO_DUPS  # do not save duplicated command
+setopt HIST_REDUCE_BLANKS  # remove unnecessary blanks
+setopt INC_APPEND_HISTORY_TIME  # append command to history file immediately after execution
+setopt EXTENDED_HISTORY  # record command start time
+
+
+# Enhance navigation
+#
+#
+
+# thanks to:
+# - https://unix.stackexchange.com/questions/258656/how-can-i-have-two-keystrokes-to-delete-to-either-a-slash-or-a-word-in-zsh
+# - https://unix.stackexchange.com/questions/250690/how-to-configure-ctrlw-as-delete-word-in-zsh
+bindkey ";5D" vi-backward-word
+bindkey ";5C" vi-forward-word
+bindkey "^W" vi-backward-kill-word
+
+
+# Set up the prompt (with git branch name)
+#
+#
+
+# Inspiration source: https://medium.com/@dpeachesdev/intro-to-zsh-without-oh-my-zsh-part-1-c039de5ee22e
+git_branch() {
+  git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+
+# From: https://www.themoderncoder.com/add-git-branch-information-to-your-zsh-prompt/
+# Colors: https://upload.wikimedia.org/wikipedia/commons/1/15/Xterm_256color_chart.svg
+autoload -Uz vcs_info
+precmd() { vcs_info }
+zstyle ':vcs_info:git:*' formats '%F{202}%s%f:%F{196}%m%f %F{220}%b%f'
+
+
+# See Also: https://zsh.sourceforge.io/Doc/Release/Prompt-Expansion.html#Visual-effects
+# Format: https://zsh.sourceforge.io/Doc/Release/User-Contributions.html#Version-Control-Information
+setopt PROMPT_SUBST
+PROMPT='%B%F{119}%n@:%f%F{228}%(3~;~/.../;)%2~/%f (${vcs_info_msg_0_}) ~>%b '
+
+# End prompt expansion setup
+#
+#
